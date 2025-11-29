@@ -2,7 +2,7 @@
 from pymongo import MongoClient, ASCENDING
 import os
 
-MONGO_URI = "mongodb+srv://nishaddsutar42203_db_user:j4IwCoKI05NwMzwn@cluster0.zmeaadd.mongodb.net/?deeptrust=Cluster0"
+MONGO_URI = "<MONGO_URI>"
 MONGO_DB_NAME = "deeptrust"
 
 client = MongoClient(
@@ -31,3 +31,4 @@ claims.create_index([("claim_hash", ASCENDING)], unique=True)
 claims.create_index([("expires_at", ASCENDING)])
 verifications.create_index([("media_id", ASCENDING)])
 snippets.create_index([("published_at", ASCENDING)])
+
