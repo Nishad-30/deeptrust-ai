@@ -3,7 +3,7 @@ import os
 import json
 import requests
 
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "<OPENROUTER_API_KEY>"
 CHIEF_MODEL = "meta-llama/llama-3.3-70b-instruct:free"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
@@ -115,3 +115,4 @@ def generate_task_plan(media_doc):
         step["args"].setdefault("media_id", media_doc.get("media_id"))
 
     return plan
+
