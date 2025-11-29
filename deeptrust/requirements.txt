@@ -1,0 +1,13 @@
+Django==5.0
+pymongo[srv]
+dnspython
+minio
+celery==5.3
+redis
+requests
+python-dotenv
+django-cors-headers
+djangorestframework
+requests
+python-dotenv
+django-q2

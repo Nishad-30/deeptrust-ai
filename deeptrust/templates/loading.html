@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Processing — DeepTrust{% endblock %}
+
+{% block content %}
+
+<div class="flex flex-col justify-center items-center min-h-[70vh] px-6 py-20">
+
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-blue-400 mb-6">
+        Verification in Progress
+    </h1>
+
+    <p class="text-gray-300 text-center max-w-xl mb-10">
+        We’re analyzing the media, detecting AI patterns, extracting claims,
+        checking facts, and computing your TruthScore.  
+        This may take a few seconds.
+    </p>
+
+    <!-- Animated Loader -->
+    <div class="flex flex-col items-center">
+        <div class="w-20 h-20 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Progress -->
+    <div class="w-full max-w-md mt-10">
+        <div class="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
+            <div id="progressBar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%;"></div>
+        </div>
+        <p id="progressText" class="text-center text-gray-300 mt-3 text-lg">0% completed</p>
+    </div>
+
+    <!-- Status Message -->
+    <p id="statusMessage" class="text-blue-400 mt-6 font-semibold text-xl">
+        Starting verification...
+    </p>
+
+</div>
+
+<script>
+const jobId = "{{ job_id }}";   // Django context variable passed from the view
+
+function updateStatusUI(status, progress) {
+    // Update progress bar
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const statusMessage = document.getElementById("statusMessage");
+
+    progressBar.style.width = progress + "%";
+    progressText.innerText = progress + "% completed";
+
+    // Human-friendly status messages
+    const statusMap = {
+        "processing": "Running AI Authenticity Checks...",
+        "workflow_started": "Extracting Frames & Audio...",
+        "analyzing": "Analyzing Claims with LLM Agents...",
+        "verifying": "Fact Checking with Semantic Search...",
+        "completed": "Finalizing TruthScore..."
+    };
+
+    statusMessage.innerText = statusMap[status] || "Processing...";
+}
+
+async function pollStatus() {
+    const response = await fetch(`/api/status/${jobId}/`);
+    const data = await response.json();
+
+    updateStatusUI(data.status, data.progress);
+
+    if (data.status === "completed") {
+        window.location.href = `/report/${jobId}/`;
+    }
+}
+
+// Poll backend every 3 seconds
+setInterval(pollStatus, 3000);
+
+// Run immediately once
+pollStatus();
+</script>
+
+{% endblock %}

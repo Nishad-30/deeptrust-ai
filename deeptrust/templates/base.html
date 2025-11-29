@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DeepTrust{% endblock %}</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    {% load static %}
+</head>
+
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+        <a href="{% url 'home' %}" class="text-2xl font-bold text-blue-400">DeepTrust AI</a>
+
+        <div class="flex gap-4 items-center">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="hover:text-blue-300">Dashboard</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="hover:text-red-400">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login_view' %}" class="hover:text-blue-300">Login</a>
+                <a href="{% url 'signup' %}" class="hover:text-blue-300">Signup</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-gray-500 border-t border-gray-800">
+        © {{ now|date:"Y" }} DeepTrust AI — Truth Verification Platform
+    </footer>
+
+</body>
+</html>

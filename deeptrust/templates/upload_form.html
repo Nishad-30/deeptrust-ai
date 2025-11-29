@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Upload for Verification — DeepTrust{% endblock %}
+
+{% block content %}
+
+<div class="max-w-3xl mx-auto px-6 py-16">
+
+    <!-- Header -->
+    <h1 class="text-4xl font-bold text-blue-400 mb-4">
+        Upload Media or Enter Text
+    </h1>
+    <p class="text-gray-300 mb-10">
+        DeepTrust will analyze the content, detect if it's AI-generated,
+        extract claims, fact-check them, and generate a TruthScore.
+    </p>
+
+    <!-- Upload Card -->
+    <div class="bg-gray-800 border border-gray-700 p-8 rounded-2xl shadow-xl">
+
+        <form id="verifyForm" method="POST" enctype="multipart/form-data"
+              class="space-y-8">
+            {% csrf_token %}
+
+            <!-- File Upload -->
+            <div>
+                <label class="block text-gray-300 mb-2 text-lg font-semibold">Upload File</label>
+                <input type="file" name="file" id="fileInput"
+                    class="w-full px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200
+                           focus:border-blue-500 focus:outline-none" />
+                <p class="text-gray-500 text-sm mt-1">
+                    Supported formats: images, videos, audio, PDFs.
+                </p>
+            </div>
+
+            <!-- OR Divider -->
+            <div class="flex items-center gap-3">
+                <div class="h-px bg-gray-700 flex-grow"></div>
+                <span class="text-gray-400 text-sm">OR</span>
+                <div class="h-px bg-gray-700 flex-grow"></div>
+            </div>
+
+            <!-- Text Input -->
+            <div>
+                <label class="block text-gray-300 mb-2 text-lg font-semibold">Enter Text to Verify</label>
+                <textarea name="text_input" id="textInput" rows="4"
+                    class="w-full px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200
+                           focus:border-blue-500 focus:outline-none"
+                    placeholder="Paste the content or claim you want to verify..."></textarea>
+            </div>
+
+            <!-- Claim (Optional) -->
+            <div>
+                <label class="block text-gray-300 mb-2 text-lg font-semibold">
+                    Additional Claim (Optional)
+                </label>
+                <input type="text" name="claim_text"
+                       class="w-full px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 text-gray-200
+                              focus:border-blue-500 focus:outline-none"
+                       placeholder="Type a specific claim you want to verify" />
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition">
+                Start Verification
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+document.getElementById("verifyForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    let form = document.getElementById("verifyForm");
+    let formData = new FormData(form);
+
+    const response = await fetch("/api/verify/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRFToken()
+        },
+        body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.job_id) {
+        window.location.href = `/loading/${data.job_id}/`;
+    } else {
+        alert("Error: " + JSON.stringify(data));
+    }
+});
+</script>
+
+
+{% endblock %}
